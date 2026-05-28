@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMINISTRADOR
+  FINANCEIRO
+  OPERACIONAL
+  VISUALIZACAO
+}
+
+enum StatusObra {
+  EM_ANDAMENTO
+  PROXIMO_ENCERRAMENTO
+  ENCERRADA
+  PAUSADA
+}
+
+enum StatusMedicao {
+  PENDENTE
+  APROVADA
+  PAGA
+  CANCELADA
+}
+
+enum StatusNota {
+  PENDENTE
+  PAGA
+  CANCELADA
+}
+
+enum TipoAlerta {
+  MAO_DE_OBRA_80
+  MAO_DE_OBRA_90
+  CONTRATO_100
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(VISUALIZACAO)
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Contratante {
+  id        String   @id @default(cuid())
+  nome      String
+  cpfCnpj   String   @unique
+  email     String?
+  telefone  String?
+  endereco  String?
+  cidade    String?
+  estado    String?
+  cep       String?
+  ativo     Boolean  @default(true)
+  obras     Obra[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contratantes")
+}
+
+model Fornecedor {
+  id            String         @id @default(cuid())
+  nome          String
+  cpfCnpj       String         @unique
+  email         String?
+  telefone      String?
+  endereco      String?
+  cidade        String?
+  estado        String?
+  cep           String?
+  ativo         Boolean        @default(true)
+  notasMaterial NotaMaterial[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("fornecedores")
+}
+
+model Obra {
+  id                  String             @id @default(cuid())
+  codigo              String             @unique
+  descricao           String
+  razaoSocial         String?
+  cnpj                String?
+  contratanteId       String
+  contratante         Contratante        @relation(fields: [contratanteId], references: [id])
+  valorContrato       Decimal            @db.Decimal(15, 2)
+  saldoMaoDeObra      Decimal            @db.Decimal(15, 2)
+  saldoMaterial       Decimal            @db.Decimal(15, 2)
+  totalMedicoes       Decimal            @db.Decimal(15, 2) @default(0)
+  totalNotas          Decimal            @db.Decimal(15, 2) @default(0)
+  status              StatusObra         @default(EM_ANDAMENTO)
+  dataInicio          DateTime?
+  dataFimPrevisto     DateTime?
+  dataFimReal         DateTime?
+  observacoes         String?
+  medicoes            MedicaoMaoDeObra[]
+  notasMaterial       NotaMaterial[]
+  alertas             Alerta[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@map("obras")
+}
+
+model MedicaoMaoDeObra {
+  id            String        @id @default(cuid())
+  obraId        String
+  obra          Obra          @relation(fields: [obraId], references: [id], onDelete: Cascade)
+  numero        Int
+  descricao     String
+  valor         Decimal       @db.Decimal(15, 2)
+  dataEmissao   DateTime
+  dataPagamento DateTime?
+  status        StatusMedicao @default(PENDENTE)
+  observacoes   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("medicoes_mao_de_obra")
+}
+
+model NotaMaterial {
+  id             String     @id @default(cuid())
+  obraId         String
+  obra           Obra       @relation(fields: [obraId], references: [id], onDelete: Cascade)
+  fornecedorId   String
+  fornecedor     Fornecedor @relation(fields: [fornecedorId], references: [id])
+  numeroNota     String
+  valor          Decimal    @db.Decimal(15, 2)
+  dataEmissao    DateTime
+  dataVencimento DateTime?
+  descricao      String?
+  pdfUrl         String?
+  pdfNome        String?
+  status         StatusNota @default(PENDENTE)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@map("notas_material")
+}
+
+model Alerta {
+  id        String     @id @default(cuid())
+  obraId    String
+  obra      Obra       @relation(fields: [obraId], references: [id], onDelete: Cascade)
+  tipo      TipoAlerta
+  mensagem  String
+  lido      Boolean    @default(false)
+  createdAt DateTime   @default(now())
+
+  @@map("alertas")
+}
