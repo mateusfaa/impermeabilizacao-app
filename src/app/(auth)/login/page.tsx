@@ -54,7 +54,7 @@ export default function LoginPage() {
               <HardHat size={28} className="text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">ImpermApp</h1>
+              <h1 className="text-2xl font-bold text-slate-800">FoxSystem</h1>
               <p className="text-sm text-slate-500">Gestão de Obras</p>
             </div>
           </div>

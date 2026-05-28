@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ImpermApp - Gestão de Obras",
-  description: "Sistema de gerenciamento de obras e contratos de impermeabilização",
+  title: "FoxSystem - Gestão de Obras",
+  description: "FoxSystem - Sistema de gerenciamento de obras e contratos",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

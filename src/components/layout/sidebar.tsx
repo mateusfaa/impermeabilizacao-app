@@ -55,7 +55,7 @@ export function Sidebar({ userRole }: SidebarProps) {
       <div className="flex items-center justify-between p-4 border-b border-slate-700">
         {!collapsed && (
           <div>
-            <p className="font-bold text-sm leading-tight">ImpermApp</p>
+            <p className="font-bold text-sm leading-tight">FoxSystem</p>
             <p className="text-xs text-slate-400">Gestão de Obras</p>
           </div>
         )}
