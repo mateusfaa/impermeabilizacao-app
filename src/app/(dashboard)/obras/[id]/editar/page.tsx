@@ -23,5 +23,17 @@ export default async function EditarObraPage({
 
   if (!obra) notFound();
 
-  return <EditarObraForm obra={obra} contratantes={contratantes} />;
+  return (
+    <EditarObraForm
+      obra={{
+        ...obra,
+        razaoSocial: obra.razaoSocial ?? null,
+        cnpj: obra.cnpj ?? null,
+        valorContrato: Number(obra.valorContrato),
+        saldoMaoDeObra: Number(obra.saldoMaoDeObra),
+        saldoMaterial: Number(obra.saldoMaterial),
+      }}
+      contratantes={contratantes}
+    />
+  );
 }
